@@ -1,0 +1,222 @@
+{
+  "PAGE_WIDTH_PT": 578.2677165354331,
+  "PAGE_HEIGHT_PT": 824.8818897637797,
+  "DEBUG_GUIDES": false,
+  "DEBUG_BORDERS": false,
+  "DEBUG_LABELS": false,
+  "DEBUG_UNDERLAY": false,
+  "OFFSET_X": 0.0,
+  "OFFSET_Y": 0.0,
+  "DEST_OFFSET_X": 0.0,
+  "DEST_OFFSET_Y": 0.0,
+  "SENDER_OFFSET_X": 0.0,
+  "SENDER_OFFSET_Y": 0.0,
+  "ITEM_OFFSET_X": 0.0,
+  "ITEM_OFFSET_Y": 0.0,
+  "PRICE_OFFSET_X": 0.0,
+  "PRICE_OFFSET_Y": 0.0,
+  "TIME_OFFSET_X": 0.0,
+  "TIME_OFFSET_Y": 0.0,
+  "ZIP_SPACING": 0.0,
+  "FONT_SIZE_ZIP": 7,
+  "FONT_SIZE_ADDRESS": 11,
+  "FONT_SIZE_NAME": 13,
+  "FONT_SIZE_PHONE": 9,
+  "FONT_SIZE_SENDER": 9,
+  "FONT_SIZE_ITEM_ID": 8,
+  "FONT_SIZE_ITEM": 8,
+  "FONT_SIZE_QUANTITY": 9,
+  "FONT_SIZE_INSURANCE": 8,
+  "ADDRESS_LINE_GAP_PT": 1.0,
+  "ITEM_LINE_GAP_PT": 1.0,
+  "DEST_ZIP_CELLS": [
+    {
+      "x": 99.5,
+      "y": 784.7,
+      "w": 15.0,
+      "h": 12.0
+    },
+    {
+      "x": 114.7,
+      "y": 784.7,
+      "w": 15.0,
+      "h": 12.0
+    },
+    {
+      "x": 129.9,
+      "y": 784.7,
+      "w": 15.0,
+      "h": 12.0
+    },
+    {
+      "x": 156.1,
+      "y": 784.7,
+      "w": 15.0,
+      "h": 12.0
+    },
+    {
+      "x": 171.3,
+      "y": 784.7,
+      "w": 15.0,
+      "h": 12.0
+    },
+    {
+      "x": 186.5,
+      "y": 784.7,
+      "w": 15.0,
+      "h": 12.0
+    },
+    {
+      "x": 201.7,
+      "y": 784.7,
+      "w": 15.0,
+      "h": 12.0
+    }
+  ],
+  "DEST_ADDRESS_LINES": [
+    {
+      "x": 61.0,
+      "y": 717.2,
+      "w": 192.2,
+      "h": 11.5
+    },
+    {
+      "x": 61.0,
+      "y": 705.2,
+      "w": 192.2,
+      "h": 11.5
+    },
+    {
+      "x": 61.0,
+      "y": 693.2,
+      "w": 192.2,
+      "h": 11.5
+    }
+  ],
+  "DEST_NAME_X": 61.0,
+  "DEST_NAME_Y": 675.2,
+  "DEST_NAME_W": 192.2,
+  "DEST_NAME_H": 11.5,
+  "DEST_PHONE_X": 85.0,
+  "DEST_PHONE_Y": 661.2,
+  "DEST_PHONE_W": 192.2,
+  "DEST_PHONE_H": 11.5,
+  "SENDER_ZIP_CELLS": [
+    {
+      "x": 62.0,
+      "y": 635.8,
+      "w": 15.0,
+      "h": 12.0
+    },
+    {
+      "x": 77.2,
+      "y": 635.8,
+      "w": 15.0,
+      "h": 12.0
+    },
+    {
+      "x": 92.4,
+      "y": 635.8,
+      "w": 15.0,
+      "h": 12.0
+    },
+    {
+      "x": 118.6,
+      "y": 635.8,
+      "w": 15.0,
+      "h": 12.0
+    },
+    {
+      "x": 133.8,
+      "y": 635.8,
+      "w": 15.0,
+      "h": 12.0
+    },
+    {
+      "x": 149.0,
+      "y": 635.8,
+      "w": 15.0,
+      "h": 12.0
+    },
+    {
+      "x": 164.2,
+      "y": 635.8,
+      "w": 15.0,
+      "h": 12.0
+    }
+  ],
+  "SENDER_ADDRESS_LINES": [
+    {
+      "x": 59.5,
+      "y": 612.4,
+      "w": 193.7,
+      "h": 11.5
+    },
+    {
+      "x": 59.5,
+      "y": 600.4,
+      "w": 193.7,
+      "h": 11.5
+    },
+    {
+      "x": 59.5,
+      "y": 588.4,
+      "w": 193.7,
+      "h": 11.5
+    }
+  ],
+  "SENDER_NAME_X": 59.5,
+  "SENDER_NAME_Y": 570.4,
+  "SENDER_NAME_W": 193.7,
+  "SENDER_NAME_H": 11.5,
+  "SENDER_PHONE_X": 77.5,
+  "SENDER_PHONE_Y": 556.4,
+  "SENDER_PHONE_W": 193.7,
+  "SENDER_PHONE_H": 11.5,
+  "ITEM_ID_X": 267.2,
+  "ITEM_ID_Y": 732.74,
+  "ITEM_ID_W": 168.0,
+  "ITEM_ID_H": 20.160000000000004,
+  "ITEM_NAME_LINES": [
+    {
+      "x": 267.2,
+      "y": 715.46,
+      "w": 168.0,
+      "h": 17.279999999999998
+    },
+    {
+      "x": 267.2,
+      "y": 698.1800000000001,
+      "w": 168.0,
+      "h": 17.279999999999998
+    }
+  ],
+  "QUANTITY_X": 272.0,
+  "QUANTITY_Y": 799.0,
+  "QUANTITY_W": 30.0,
+  "QUANTITY_H": 26.0,
+  "INSURANCE_CHECK_X": 336.0,
+  "INSURANCE_CHECK_Y": 670.5,
+  "INSURANCE_CHECK_W": 16.0,
+  "INSURANCE_CHECK_H": 16.0,
+  "INSURANCE_AMOUNT_X": 430.0,
+  "INSURANCE_AMOUNT_Y": 671.5,
+  "INSURANCE_AMOUNT_W": 86.0,
+  "INSURANCE_AMOUNT_H": 17.0,
+  "TIME_CHECK_MARK_SIZE": 9.0,
+  "TIME_CHECK_MORNING_X": 276.0,
+  "TIME_CHECK_MORNING_Y": 653.0,
+  "TIME_CHECK_12_14_X": 302.0,
+  "TIME_CHECK_12_14_Y": 653.0,
+  "TIME_CHECK_14_16_X": 328.0,
+  "TIME_CHECK_14_16_Y": 653.0,
+  "TIME_CHECK_16_18_X": 354.0,
+  "TIME_CHECK_16_18_Y": 653.0,
+  "TIME_CHECK_18_20_X": 380.0,
+  "TIME_CHECK_18_20_Y": 653.0,
+  "TIME_CHECK_19_21_X": 406.0,
+  "TIME_CHECK_19_21_Y": 653.0,
+  "DEBUG_TIME_CHECK_FORCE": false,
+  "PAGE_WIDTH_MM": 204.0,
+  "PAGE_HEIGHT_MM": 291.0
+}

@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.Python
+
+# Build / dist
+build/
+dist/
+*.spec.bak
+
+# Generated output (local preview / PDF / PNG)
+output/
+exports/
+*.pdf
+*.png
+*.jpg
+*.jpeg
+
+# Local temp / test
+_test_parse.txt
+*.tmp
+*.log
+*.bak
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# PyInstaller cache
+*.manifest

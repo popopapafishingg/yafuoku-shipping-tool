@@ -1,0 +1,76 @@
+{
+  "to_box": [
+    61.0,
+    719.6,
+    192.4,
+    11.5
+  ],
+  "from_box": [
+    59.5,
+    572.9,
+    193.9,
+    11.5
+  ],
+  "zip_digit_x": [
+    107.0,
+    122.2,
+    137.4,
+    163.6,
+    178.8,
+    194.0,
+    209.2
+  ],
+  "zip_digit_y": 789.8,
+  "sender_zip_digit_x": [
+    69.5,
+    84.7,
+    99.9,
+    126.1,
+    141.3,
+    156.5,
+    171.7
+  ],
+  "sender_zip_y": 640.8,
+  "to_x": 64.0,
+  "to_addr_y": [
+    723.4,
+    711.4,
+    699.4
+  ],
+  "to_name_y": 678.3,
+  "to_phone_y": 664.5,
+  "from_x": 62.5,
+  "from_addr_y": [
+    618.8,
+    606.8,
+    594.8
+  ],
+  "from_name_y": 576.8,
+  "from_phone_y": 562.8,
+  "quantity_x": 282.5,
+  "quantity_y": 808.4,
+  "item_box": [
+    266.4,
+    680.4000000000001,
+    170.0,
+    73.99999999999989
+  ],
+  "item_x": 269.4,
+  "item_auction_y": 740.5,
+  "item_line_y": [
+    722.1,
+    704.8,
+    687.6
+  ],
+  "insurance_check_x": 338.0,
+  "insurance_check_y": 676.6,
+  "insurance_amount_x": 432.0,
+  "insurance_amount_y": 678.0,
+  "left_x": 64.0,
+  "addr_start_y": 723.4,
+  "sender_x": 62.5,
+  "sender_zip_y_cap": 640.8,
+  "right_x": 269.4,
+  "item_top_y": 740.5,
+  "rotation": "raw"
+}
