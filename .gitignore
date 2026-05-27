@@ -24,6 +24,21 @@ _test_parse.txt
 *.tmp
 *.log
 *.bak
+capture_log*
+tmp/
+temp/
+backups/
+results/
+state/
+processed_tasks/
+processing_tasks/
+.env
+.env.*
+secrets/
+*token*
+*session*
+*cookie*
+node_modules/
 
 # IDE
 .idea/
