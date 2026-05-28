@@ -40,6 +40,7 @@ THRESHOLDS_PT: dict[str, float] = {
     "insurance": 16.0,
     "item": 20.0,
 }
+PT_TO_MM = 25.4 / 72.0
 
 
 @dataclass
@@ -50,6 +51,10 @@ class FieldCheck:
     ok: bool
     expected: tuple[float, float, float, float]
     actual: tuple[float, float, float, float]
+
+    @property
+    def err_mm(self) -> float:
+        return round(self.err_pt * PT_TO_MM, 2)
 
 
 def _center(rect: tuple[float, float, float, float]) -> tuple[float, float]:
@@ -97,6 +102,15 @@ def _check_pair(
     )
 
 
+def _offset_mm(
+    expected: tuple[float, float, float, float],
+    actual: tuple[float, float, float, float],
+) -> tuple[float, float]:
+    ex, ey = _center(expected)
+    ax, ay = _center(actual)
+    return round((ax - ex) * PT_TO_MM, 2), round((ay - ey) * PT_TO_MM, 2)
+
+
 def _expected_from_scan(scan_lay: dict) -> list[tuple[str, str, tuple[float, float, float, float]]]:
     out: list[tuple[str, str, tuple[float, float, float, float]]] = []
     for i, r in enumerate(scan_lay["recv_cells"][:7]):
@@ -130,7 +144,9 @@ def _actual_from_layout() -> dict[str, tuple[float, float, float, float]]:
 def run_checks() -> tuple[list[FieldCheck], dict]:
     img, iw, ih = load_scan()
     scan_lay = _analyze_scan_layout(img, iw, ih)
-    expected_list = _expected_from_scan(scan_lay)
+    expected_list = [
+        row for row in _expected_from_scan(scan_lay) if row[1] in {"zip", "text", "item"}
+    ]
     actual_map = _actual_from_layout()
 
     checks: list[FieldCheck] = []
@@ -241,7 +257,9 @@ def verify_preview_pdf_rects(pdf_path: Path) -> tuple[list[FieldCheck], dict]:
 
     img, iw, ih = load_scan()
     scan_lay = _analyze_scan_layout(img, iw, ih)
-    expected_list = _expected_from_scan(scan_lay)
+    expected_list = [
+        row for row in _expected_from_scan(scan_lay) if row[1] in {"zip", "text", "item"}
+    ]
 
     checks: list[FieldCheck] = []
     used: set[int] = set()
@@ -399,9 +417,11 @@ def main(argv: list[str] | None = None) -> int:
                 "name": c.name,
                 "category": c.category,
                 "err_pt": c.err_pt,
+                "err_mm": c.err_mm,
                 "ok": c.ok,
                 "expected": list(c.expected),
                 "actual": list(c.actual),
+                "delta_center_mm": list(_offset_mm(c.expected, c.actual)),
             }
             for c in checks
         ],
@@ -412,6 +432,7 @@ def main(argv: list[str] | None = None) -> int:
 
     s = meta["summary"]
     print(f"OK {s['ok']}/{s['total']}  NG {s['ng']}  max_err={s['max_err_pt']}pt")
+    print(f"max_err_mm={round(float(s['max_err_pt']) * PT_TO_MM, 2)}mm")
     print(
         "※ 数値OK = 検出ロジックと設定JSONの一致。"
         "用紙との見た目は layout_preview_review.png で確認してください。"
@@ -429,7 +450,12 @@ def main(argv: list[str] | None = None) -> int:
             print(f"再検証 OK {s2['ok']}/{s2['total']}  NG {s2['ng']}")
             return 0 if s2["ng"] == 0 and not s2["missing"] else 1
         for w in s.get("worst", []):
-            print(f"  NG {w['name']}: {w['err_pt']}pt (limit {w['limit']})")
+            mm = round(float(w["err_pt"]) * PT_TO_MM, 2)
+            print(f"  NG {w['name']}: {w['err_pt']}pt / {mm}mm (limit {w['limit']}pt)")
+        ng_checks = sorted((c for c in checks if not c.ok), key=lambda x: -x.err_pt)[:8]
+        for c in ng_checks:
+            dx_mm, dy_mm = _offset_mm(c.expected, c.actual)
+            print(f"  Δcenter {c.name}: dx={dx_mm}mm dy={dy_mm}mm")
         return 1
     return 0
 

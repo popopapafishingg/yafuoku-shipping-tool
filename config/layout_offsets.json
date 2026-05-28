@@ -6,8 +6,8 @@
     "dy_mm": 0.0
   },
   "dest": {
-    "dx_mm": 1.0,
-    "dy_mm": 0.5,
+    "dx_mm": 0.0,
+    "dy_mm": 0.0,
     "zip_dx_mm": 1.2,
     "zip_dy_mm": 0.3,
     "zip_cell_w_mm": 0.5,
@@ -21,8 +21,8 @@
     "company_dy_mm": 0.0
   },
   "sender": {
-    "dx_mm": 0.6,
-    "dy_mm": 0.3,
+    "dx_mm": 0.0,
+    "dy_mm": 0.0,
     "zip_dx_mm": 0.8,
     "zip_dy_mm": 0.2,
     "address_dx_mm": 0.5,
@@ -32,8 +32,8 @@
     "phone_slot_count": 13
   },
   "item": {
-    "dx_mm": -2.0,
-    "dy_mm": 1.0,
+    "dx_mm": 0.0,
+    "dy_mm": 0.0,
     "id_x_mm": 0.0,
     "id_y_mm": 0.5,
     "id_w_mm": -14.0,

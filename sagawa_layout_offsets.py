@@ -119,8 +119,8 @@ def apply_zip_cells(
     group: str,
 ) -> tuple[AbsBox, ...]:
     sec = _section(offsets, group)
-    dx = mm_to_pt(_f(sec, "zip_dx_mm") + _f(sec, "dx_mm"))
-    dy = mm_to_pt(_f(sec, "zip_dy_mm") + _f(sec, "dy_mm"))
+    dx = mm_to_pt(_f(sec, "zip_dx_mm"))
+    dy = mm_to_pt(_f(sec, "zip_dy_mm"))
     dw = mm_to_pt(_f(sec, "zip_cell_w_mm"))
     out: list[AbsBox] = []
     for b in cells:
@@ -140,8 +140,8 @@ def apply_address_lines(
     group: str,
 ) -> tuple[AbsBox, ...]:
     sec = _section(offsets, group)
-    dx = mm_to_pt(_f(sec, "address_dx_mm") + _f(sec, "dx_mm"))
-    dy = mm_to_pt(_f(sec, "address_dy_mm") + _f(sec, "dy_mm"))
+    dx = mm_to_pt(_f(sec, "address_dx_mm"))
+    dy = mm_to_pt(_f(sec, "address_dy_mm"))
     dh = mm_to_pt(_f(sec, "address_line_h_mm"))
     out: list[AbsBox] = []
     for b in lines:
