@@ -7,15 +7,15 @@
   },
   "dest": {
     "dx_mm": 0.0,
-    "dy_mm": 0.6,
+    "dy_mm": 0.3,
     "zip_dx_mm": 1.2,
-    "zip_dy_mm": 0.3,
+    "zip_dy_mm": 0.6,
     "zip_cell_w_mm": 0.5,
     "address_dx_mm": 0.8,
-    "address_dy_mm": 0.2,
+    "address_dy_mm": 0.5,
     "address_line_h_mm": 0.2,
     "phone_dx_mm": 2.5,
-    "phone_dy_mm": -1.4,
+    "phone_dy_mm": -1.1,
     "phone_slot_count": 13,
     "name_dy_mm": 0.0,
     "company_dy_mm": 0.0
@@ -28,7 +28,7 @@
     "address_dx_mm": 0.5,
     "address_dy_mm": 0.5,
     "phone_dx_mm": 2.0,
-    "phone_dy_mm": -0.2,
+    "phone_dy_mm": 0.1,
     "phone_slot_count": 13
   },
   "item": {
