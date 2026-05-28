@@ -324,7 +324,8 @@ def normalize_sender_fields(
 ) -> SenderPrintFields:
     """sender固定プロフィール専用の安全正規化。"""
     phone = format_phone_field((phone or "").strip())
-    clean_name = sanitize_company_name((name or "").strip(), phone)
+    raw_name = strip_trailing_phone_fragment((name or "").strip(), phone)
+    clean_name = "" if is_phone_fragment_name(raw_name, phone) else raw_name
     clean_addr = strip_trailing_phone_fragment((address or "").strip(), phone)
     return SenderPrintFields(
         zip_code=(zip_code or "").replace("-", "").replace("－", "")[:7],

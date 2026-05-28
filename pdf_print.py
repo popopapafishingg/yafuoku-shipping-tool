@@ -57,7 +57,6 @@ from sagawa_print_config import (
     shifted_box,
     shifted_boxes,
 )
-from sender_profile import load_sender_profile
 
 CARRIER_TITLES = {
     "sagawa": "佐川",
@@ -517,8 +516,8 @@ def _draw_sender_absolute(
 ) -> None:
     if not data.print_sender:
         return
-    # sender は固定プロフィール優先。recipient(OCR)と完全分離する。
-    s = load_sender_profile() or data.sender
+    # sender は app.py で優先順位解決済みデータを使用する（recipientと完全分離）。
+    s = data.sender
     sender_data = normalize_sender_fields(
         name=s.name,
         zip_code=s.zip_code,
@@ -787,6 +786,7 @@ def _make_pdf(
         cfg, boxes = resolve_print_boxes(lay)
         pagesize = SAGAWA_PAGE_SIZE
         _log_page_size()
+        _log_sagawa_print_data(data)
     else:
         pagesize = A4
         cfg = {}
@@ -819,6 +819,35 @@ def _make_pdf(
         raise ValueError(f"不明な carrier: {carrier_key}")
 
     c.save()
+
+
+def _split_recipient_address_for_log(address: str) -> tuple[str, str]:
+    lines = [ln.strip() for ln in re.split(r"[\r\n]+", address or "") if ln.strip()]
+    if not lines:
+        return "", ""
+    if len(lines) == 1:
+        return lines[0], ""
+    return lines[0], " ".join(lines[1:])
+
+
+def _log_sagawa_print_data(data: LabelPrintData) -> None:
+    r = data.recipient
+    s = data.sender
+    addr, building = _split_recipient_address_for_log(r.address)
+    print("=== SAGAWA PRINT DATA ===")
+    print(f"recipient_name={r.name}")
+    print(f"recipient_zip={r.zip_code}")
+    print(f"recipient_address={addr}")
+    print(f"recipient_building={building}")
+    print(f"recipient_phone={r.phone}")
+    print(f"sender_name={s.name}")
+    print(f"sender_zip={s.zip_code}")
+    print(f"sender_address={s.address}")
+    print(f"sender_phone={s.phone}")
+    print(f"item_name={data.product_name}")
+    print(f"item_id={data.auction_id}")
+    print(f"insurance_amount={data.insurance_amount}")
+    print("=========================")
 
 
 def default_preview_label_data() -> LabelPrintData:

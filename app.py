@@ -540,6 +540,14 @@ class App(tk.Tk):
                 self._on_insurance_mode()
         self._parse_item_box()
 
+    @staticmethod
+    def _pick_non_empty(*values: str) -> str:
+        for v in values:
+            s = (v or "").strip()
+            if s:
+                return s
+        return ""
+
     def _on_close(self) -> None:
         save_carrier(self.var_carrier.get())
         self._save_sender_quiet()
@@ -575,15 +583,29 @@ class App(tk.Tk):
         messagebox.showinfo(APP_TITLE, "発送元を保存しました。")
 
     def _get_sender(self) -> SenderInfo:
-        # 印刷時は sender_profile.json を常に優先（GUIや将来のOCRよりも上書き）
-        prof = load_sender_profile()
-        if prof:
-            return prof
+        # 優先: GUI入力 > sender_profile.json > 空欄
+        prof = load_sender_profile() or SenderInfo()
+        zip_code = self._pick_non_empty(
+            self.var_sender_zip.get().strip().replace("-", ""),
+            prof.zip_code,
+        )
+        address = self._pick_non_empty(
+            self.var_sender_addr.get().strip(),
+            prof.address,
+        )
+        name = self._pick_non_empty(
+            self.var_sender_name.get().strip(),
+            prof.name,
+        )
+        phone = self._pick_non_empty(
+            self.var_sender_phone.get().strip(),
+            prof.phone,
+        )
         return SenderInfo(
-            zip_code=self.var_sender_zip.get().strip().replace("-", ""),
-            address=self.var_sender_addr.get().strip(),
-            name=self.var_sender_name.get().strip(),
-            phone=self.var_sender_phone.get().strip(),
+            zip_code=zip_code,
+            address=address,
+            name=name,
+            phone=phone,
         )
 
     def _load_sample(self) -> None:
@@ -611,21 +633,41 @@ class App(tk.Tk):
         self._sync_all_from_paste()
 
     def _get_recipient(self) -> ShippingInfo:
-        self._sync_all_from_paste()
+        raw = self.txt.get("1.0", "end").strip()
+        parsed: ShippingInfo | None = None
+        if raw:
+            try:
+                parsed = parse_shipping_text(raw)
+            except ValueError:
+                parsed = None
+        parsed_phone = extract_phone_any(raw) if raw else ""
 
-        name = self.var_name.get().strip()
-        zip_code = self.var_zip.get().strip().replace("-", "")
-        addr = self.var_addr.get().strip()
-        company = sanitize_company_name(
-            self.var_company.get().strip(),
-            self.var_recipient_phone.get().strip(),
+        gui_phone = self.var_recipient_phone.get().strip()
+        phone = self._pick_non_empty(gui_phone, parsed.phone if parsed else "", parsed_phone)
+
+        name = self._pick_non_empty(self.var_name.get().strip(), parsed.name if parsed else "")
+        zip_code = self._pick_non_empty(
+            self.var_zip.get().strip().replace("-", ""),
+            (parsed.zip_code if parsed else "").replace("-", ""),
         )
+        addr = self._pick_non_empty(self.var_addr.get().strip(), parsed.address if parsed else "")
+        company_raw = self._pick_non_empty(
+            self.var_company.get().strip(),
+            parsed.company if parsed else "",
+        )
+        company = sanitize_company_name(company_raw, phone)
 
         if company and name and name == company:
             company = ""
 
-        address = self._drop_phone_fragment(addr, self.var_recipient_phone.get().strip())
-        company = sanitize_company_name(company, self.var_recipient_phone.get().strip())
+        address = self._drop_phone_fragment(addr, phone)
+        company = sanitize_company_name(company, phone)
+
+        # 電話番号断片は氏名・会社名欄へ入れない
+        if self._looks_like_phone(name) or is_phone_digit_fragment(name, phone):
+            name = ""
+        if self._looks_like_phone(company) or is_phone_digit_fragment(company, phone):
+            company = ""
 
         if not name and not address and not zip_code:
             raise ValueError(
@@ -648,14 +690,14 @@ class App(tk.Tk):
             name=name,
             zip_code=zip_code,
             address=address,
-            phone=self.var_recipient_phone.get().strip(),
+            phone=phone,
             company=company,
         )
 
     def _get_label_data(self) -> LabelPrintData:
         print_sender = self.var_print_sender.get()
         sender = self._get_sender()
-        # sender_profile.json がある運用では sender を常時印字する
+        # sender_profile が存在する場合は sender を常時印字
         if load_sender_profile() is not None:
             print_sender = True
         if print_sender:
@@ -666,8 +708,13 @@ class App(tk.Tk):
                 print_sender = False
 
         self._parse_item_box()
-        aid = self.var_auction_id.get().strip()
-        prod = self.var_product.get().strip()
+        raw_main = self.txt.get("1.0", "end").strip()
+        raw_item = self.txt_item.get("1.0", "end").strip() if hasattr(self, "txt_item") else ""
+        parsed_aid, parsed_prod, _parsed_qty = parse_auction_product(
+            "\n".join(x for x in (raw_item, raw_main) if x)
+        )
+        aid = self._pick_non_empty(self.var_auction_id.get().strip(), parsed_aid)
+        prod = self._pick_non_empty(self.var_product.get().strip(), parsed_prod)
 
         try:
             ins_amount = int(re.sub(r"[^\d]", "", self.var_insurance_amount.get() or "0"))
@@ -707,7 +754,6 @@ class App(tk.Tk):
         try:
             save_carrier(self.var_carrier.get())
             self._save_insurance_quiet()
-            self._sync_all_from_paste()
             data = self._get_label_data()
             printer = get_default_printer_name()
             if not printer:
