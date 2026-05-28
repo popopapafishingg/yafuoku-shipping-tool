@@ -89,8 +89,8 @@ def _split_item_box(box: tuple[float, float, float, float]) -> tuple[AbsBox, tup
     return auction, tuple(lines)
 
 
-def baseline_in_box(box: AbsBox, font_size: int) -> float:
-    return round(box.y + box.h * 0.38 - font_size * 0.05, 1)
+def baseline_in_box(box: AbsBox, font_size: int, ratio: float = 0.38) -> float:
+    return round(box.y + box.h * float(ratio) - font_size * 0.05, 1)
 
 
 def zip_center_xs(cells: tuple[AbsBox, ...]) -> tuple[float, ...]:

@@ -26,6 +26,7 @@ _HYPHENATED_NUMBER = re.compile(r"\d+[-－]\d+")
 class ZipFieldStyle:
     font_size: int = 7
     min_font_size: int = 6
+    baseline_ratio: float = 0.4
 
 
 @dataclass(frozen=True)
@@ -33,6 +34,7 @@ class AddressFieldStyle:
     font_size: int = 11
     min_font_size: int = 7
     padding_x: float = 2.0
+    baseline_ratio: float = 0.42
 
 
 @dataclass(frozen=True)
@@ -46,6 +48,7 @@ class CompanyFieldStyle:
 class NameFieldStyle:
     font_size: int = 13
     min_font_size: int = 8
+    baseline_ratio: float = 0.4
 
 
 @dataclass(frozen=True)
@@ -53,6 +56,7 @@ class PhoneFieldStyle:
     font_size: int = 9
     min_font_size: int = 7
     padding_x: float = 2.0
+    baseline_ratio: float = 0.4
 
 
 def _tokenize_units(text: str) -> list[str]:
@@ -151,10 +155,10 @@ def draw_zip_field(
     if len(cells) != RECIPIENT_ZIP_DIGIT_COUNT:
         return
     size = style.font_size
-    y_ref = baseline_in_box(cells[0], size)
+    y_ref = baseline_in_box(cells[0], size, style.baseline_ratio)
     for ch, box in zip(digits, cells):
         draw_size = _fit_font_single_line(c, font, ch, box, size, style.min_font_size)
-        y = baseline_in_box(box, draw_size)
+        y = baseline_in_box(box, draw_size, style.baseline_ratio)
         # 同一行の baseline を揃える
         y = y_ref if draw_size == size else y
         w = c.stringWidth(ch, font, draw_size)
@@ -194,7 +198,7 @@ def draw_address_field(
     for box, line in zip(lines_boxes[:n], lines):
         if not line:
             continue
-        y = baseline_in_box(box, size)
+        y = baseline_in_box(box, size, style.baseline_ratio)
         _draw_string(c, font, size, box.x + style.padding_x, y, line)
 
 
@@ -237,7 +241,7 @@ def draw_name_field(
         return
     box = fields.name
     size = _fit_font_single_line(c, font, text, box, style.font_size, style.min_font_size)
-    y = baseline_in_box(box, size)
+    y = baseline_in_box(box, size, style.baseline_ratio)
     w = c.stringWidth(text, font, size)
     x = box.x + (box.w - w) / 2.0
     _draw_string(c, font, size, x, y, text)
@@ -268,13 +272,29 @@ def draw_phone_field(
     fields: DestInputFields,
     style: PhoneFieldStyle,
 ) -> None:
-    """電話番号欄: ハイフン整形・固定 baseline・左寄せ。"""
+    """電話番号欄: 1文字ずつスロット中央（ハイフン含む）。"""
     text = format_phone_field(phone)
     if not text:
         return
+    cells = fields.phone_cells
+    if cells:
+        size = style.font_size
+        y_ref = baseline_in_box(cells[0], size, style.baseline_ratio)
+        for i, ch in enumerate(text):
+            if i >= len(cells):
+                break
+            box = cells[i]
+            draw_size = _fit_font_single_line(c, font, ch, box, size, style.min_font_size)
+            y = baseline_in_box(box, draw_size, style.baseline_ratio)
+            if draw_size == size:
+                y = y_ref
+            w = c.stringWidth(ch, font, draw_size)
+            x = box.x + (box.w - w) / 2.0
+            _draw_string(c, font, draw_size, x, y, ch)
+        return
     box = fields.phone
     size = _fit_font_single_line(c, font, text, box, style.font_size, style.min_font_size)
-    y = baseline_in_box(box, size)
+    y = baseline_in_box(box, size, style.baseline_ratio)
     _draw_string(c, font, size, box.x + style.padding_x, y, text)
 
 

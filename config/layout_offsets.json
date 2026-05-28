@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "note": "座標微調整専用。dx_mm=右+, dy_mm=上+（PDFは左下原点）。1mm=2.83465pt",
+  "global": {
+    "dx_mm": 0.0,
+    "dy_mm": 0.0
+  },
+  "dest": {
+    "dx_mm": 1.0,
+    "dy_mm": 0.5,
+    "zip_dx_mm": 1.2,
+    "zip_dy_mm": 0.3,
+    "zip_cell_w_mm": 0.5,
+    "address_dx_mm": 0.8,
+    "address_dy_mm": 1.0,
+    "address_line_h_mm": 0.0,
+    "phone_dx_mm": 2.5,
+    "phone_dy_mm": 0.6,
+    "phone_slot_count": 13,
+    "name_dy_mm": 0.0,
+    "company_dy_mm": 0.0
+  },
+  "sender": {
+    "dx_mm": 0.6,
+    "dy_mm": 0.3,
+    "zip_dx_mm": 0.8,
+    "zip_dy_mm": 0.2,
+    "address_dx_mm": 0.5,
+    "address_dy_mm": 0.5,
+    "phone_dx_mm": 2.0,
+    "phone_dy_mm": 0.5,
+    "phone_slot_count": 13
+  },
+  "item": {
+    "dx_mm": -2.0,
+    "dy_mm": 1.0,
+    "id_x_mm": 0.0,
+    "id_y_mm": 0.5,
+    "id_w_mm": -14.0,
+    "id_h_mm": -3.0,
+    "name_x_mm": 0.0,
+    "name_y_mm": 0.0,
+    "name_w_mm": -14.0,
+    "name_line_h_mm": -2.0,
+    "name_line_gap_mm": 0.3
+  },
+  "drawing": {
+    "zip_baseline_ratio": 0.4,
+    "address_baseline_ratio": 0.42,
+    "phone_baseline_ratio": 0.4,
+    "name_baseline_ratio": 0.4,
+    "item_baseline_ratio": 0.38
+  }
+}

@@ -469,18 +469,22 @@ def _draw_recipient_absolute(
         boxes.dest,
         zip_style=ZipFieldStyle(
             font_size=int(cfg.get("FONT_SIZE_ZIP", layout.zip_digit_size)),
+            baseline_ratio=float(cfg.get("BASELINE_RATIO_ZIP", 0.4)),
         ),
         addr_style=AddressFieldStyle(
             font_size=int(cfg.get("FONT_SIZE_ADDRESS", layout.addr_size)),
+            baseline_ratio=float(cfg.get("BASELINE_RATIO_ADDRESS", 0.42)),
         ),
         company_style=CompanyFieldStyle(
             font_size=int(cfg.get("FONT_SIZE_ADDRESS", layout.addr_size)),
         ),
         name_style=NameFieldStyle(
             font_size=int(cfg.get("FONT_SIZE_NAME", layout.name_size)),
+            baseline_ratio=float(cfg.get("BASELINE_RATIO_NAME", 0.4)),
         ),
         phone_style=PhoneFieldStyle(
             font_size=int(cfg.get("FONT_SIZE_PHONE", layout.recipient_phone_size)),
+            baseline_ratio=float(cfg.get("BASELINE_RATIO_PHONE", 0.4)),
         ),
     )
 
@@ -517,7 +521,28 @@ def _draw_sender_absolute(
     if s.name:
         _draw_single_line_in_box(c, font, s.name.strip(), boxes.sender_name, size)
     phone = _format_phone(s.phone)
-    if phone:
+    if phone and boxes.sender_phone_cells:
+        from sagawa_field_draw import PhoneFieldStyle, draw_phone_field
+        from sagawa_recipient_layout import DestInputFields
+
+        draw_phone_field(
+            c,
+            font,
+            phone,
+            DestInputFields(
+                zip_cells=(),
+                address_lines=(),
+                company=boxes.sender_phone,
+                name=boxes.sender_phone,
+                phone=boxes.sender_phone,
+                phone_cells=boxes.sender_phone_cells,
+            ),
+            PhoneFieldStyle(
+                font_size=int(cfg.get("FONT_SIZE_PHONE", layout.recipient_phone_size)),
+                baseline_ratio=float(cfg.get("BASELINE_RATIO_PHONE", 0.4)),
+            ),
+        )
+    elif phone:
         _draw_single_line_in_box(c, font, phone, boxes.sender_phone, size)
 
 

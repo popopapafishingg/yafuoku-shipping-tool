@@ -20,6 +20,7 @@ class DestInputFields:
     company: AbsBox
     name: AbsBox
     phone: AbsBox
+    phone_cells: tuple[AbsBox, ...] = ()
 
     def guide_rects(self) -> list[tuple[str, AbsBox]]:
         out: list[tuple[str, AbsBox]] = []
@@ -30,7 +31,29 @@ class DestInputFields:
         out.append(("宛先会社名", self.company))
         out.append(("宛先氏名", self.name))
         out.append(("宛先電話番号", self.phone))
+        for i, b in enumerate(self.phone_cells):
+            out.append((f"宛先TELマス{i + 1}", b))
         return out
+
+
+def phone_cells_from_box(phone_box: AbsBox, slot_count: int = 13) -> tuple[AbsBox, ...]:
+    """
+    電話欄を等幅スロットに分割（1文字ずつ各マス中央へ印字）。
+    ハイフン含む最大 slot_count 文字を想定。
+    """
+    n = max(1, int(slot_count))
+    pad_x = 3.0
+    usable_w = max(1.0, phone_box.w - pad_x * 2.0)
+    cell_w = usable_w / float(n)
+    return tuple(
+        AbsBox(
+            round(phone_box.x + pad_x + i * cell_w, 2),
+            phone_box.y,
+            round(cell_w, 2),
+            phone_box.h,
+        )
+        for i in range(n)
+    )
 
 
 def normalize_zip_row_cells(cells: tuple[AbsBox, ...]) -> tuple[AbsBox, ...]:

@@ -295,6 +295,22 @@ def load_print_config(layout: SagawaLayout) -> dict[str, Any]:
         )
     except (TypeError, ValueError):
         pass
+    try:
+        from sagawa_layout_offsets import (
+            drawing_ratios,
+            ensure_layout_offsets_file,
+            load_layout_offsets,
+        )
+
+        ensure_layout_offsets_file()
+        ratios = drawing_ratios(load_layout_offsets())
+        data["BASELINE_RATIO_ZIP"] = ratios["zip"]
+        data["BASELINE_RATIO_ADDRESS"] = ratios["address"]
+        data["BASELINE_RATIO_PHONE"] = ratios["phone"]
+        data["BASELINE_RATIO_NAME"] = ratios["name"]
+        data["BASELINE_RATIO_ITEM"] = ratios["item"]
+    except Exception:
+        pass
     return data
 
 
