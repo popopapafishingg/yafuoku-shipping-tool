@@ -7,28 +7,28 @@
   },
   "dest": {
     "dx_mm": 0.0,
-    "dy_mm": 0.0,
+    "dy_mm": 0.6,
     "zip_dx_mm": 1.2,
     "zip_dy_mm": 0.3,
     "zip_cell_w_mm": 0.5,
     "address_dx_mm": 0.8,
-    "address_dy_mm": 1.0,
-    "address_line_h_mm": 0.0,
+    "address_dy_mm": 0.2,
+    "address_line_h_mm": 0.2,
     "phone_dx_mm": 2.5,
-    "phone_dy_mm": 0.6,
+    "phone_dy_mm": -1.4,
     "phone_slot_count": 13,
     "name_dy_mm": 0.0,
     "company_dy_mm": 0.0
   },
   "sender": {
     "dx_mm": 0.0,
-    "dy_mm": 0.0,
+    "dy_mm": -0.5,
     "zip_dx_mm": 0.8,
     "zip_dy_mm": 0.2,
     "address_dx_mm": 0.5,
     "address_dy_mm": 0.5,
     "phone_dx_mm": 2.0,
-    "phone_dy_mm": 0.5,
+    "phone_dy_mm": -0.2,
     "phone_slot_count": 13
   },
   "item": {
@@ -39,7 +39,7 @@
     "id_w_mm": -14.0,
     "id_h_mm": -3.0,
     "name_x_mm": 0.0,
-    "name_y_mm": 0.0,
+    "name_y_mm": 0.8,
     "name_w_mm": -14.0,
     "name_line_h_mm": -2.0,
     "name_line_gap_mm": 0.3
