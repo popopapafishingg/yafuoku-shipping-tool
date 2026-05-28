@@ -307,6 +307,33 @@ class RecipientPrintFields:
     phone: str
 
 
+@dataclass(frozen=True)
+class SenderPrintFields:
+    zip_code: str
+    address: str
+    name: str
+    phone: str
+
+
+def normalize_sender_fields(
+    *,
+    name: str,
+    zip_code: str,
+    address: str,
+    phone: str,
+) -> SenderPrintFields:
+    """sender固定プロフィール専用の安全正規化。"""
+    phone = format_phone_field((phone or "").strip())
+    clean_name = sanitize_company_name((name or "").strip(), phone)
+    clean_addr = strip_trailing_phone_fragment((address or "").strip(), phone)
+    return SenderPrintFields(
+        zip_code=(zip_code or "").replace("-", "").replace("－", "")[:7],
+        address=clean_addr,
+        name=clean_name,
+        phone=phone,
+    )
+
+
 def normalize_recipient_fields(
     *,
     name: str,

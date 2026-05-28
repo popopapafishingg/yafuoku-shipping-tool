@@ -41,6 +41,7 @@ from settings_store import (
     save_sender,
 )
 from label_layout import get_sagawa_layout
+from sender_profile import load_sender_profile
 from sagawa_print_config import config_path, load_print_config, save_print_config
 from sagawa_print_config import (
     ensure_seino_placeholder_files,
@@ -142,7 +143,9 @@ class App(tk.Tk):
         self.update_idletasks()
 
     def _load_sender_fields(self) -> None:
-        s = load_sender()
+        # sender_profile.json があればそれを優先して初期表示に使う
+        prof = load_sender_profile()
+        s = prof or load_sender()
         self.var_sender_zip.set(s.zip_code)
         self.var_sender_addr.set(s.address)
         self.var_sender_name.set(s.name)
@@ -572,6 +575,10 @@ class App(tk.Tk):
         messagebox.showinfo(APP_TITLE, "発送元を保存しました。")
 
     def _get_sender(self) -> SenderInfo:
+        # 印刷時は sender_profile.json を常に優先（GUIや将来のOCRよりも上書き）
+        prof = load_sender_profile()
+        if prof:
+            return prof
         return SenderInfo(
             zip_code=self.var_sender_zip.get().strip().replace("-", ""),
             address=self.var_sender_addr.get().strip(),
@@ -648,6 +655,9 @@ class App(tk.Tk):
     def _get_label_data(self) -> LabelPrintData:
         print_sender = self.var_print_sender.get()
         sender = self._get_sender()
+        # sender_profile.json がある運用では sender を常時印字する
+        if load_sender_profile() is not None:
+            print_sender = True
         if print_sender:
             has_sender = bool(
                 sender.name or sender.zip_code or sender.address or sender.phone

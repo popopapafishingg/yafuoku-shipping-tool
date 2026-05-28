@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from label_layout import SagawaLayout
-from sagawa_fields import AbsBox
+from sagawa_fields import AbsBox, SagawaSemanticFieldMap
 from sagawa_layout_offsets import (
     apply_address_lines,
     apply_group_offset,
@@ -38,9 +38,27 @@ class SagawaPrintBoxes:
     sender_addr: tuple[AbsBox, ...]
     sender_name: AbsBox
     sender_phone: AbsBox
-    sender_phone_cells: tuple[AbsBox, ...]
     item_id: AbsBox
     item_lines: tuple[AbsBox, ...]
+
+    def semantic_fields(self) -> SagawaSemanticFieldMap:
+        """印刷時の実座標を意味ベースの欄名で参照する。"""
+        return SagawaSemanticFieldMap(
+            recipient_zip_cells=self.dest.zip_cells,
+            recipient_address_lines=self.dest.address_lines,
+            recipient_company=self.dest.company,
+            recipient_name=self.dest.name,
+            recipient_phone=self.dest.phone,
+            sender_zip_cells=self.sender_zip,
+            sender_address_lines=self.sender_addr,
+            sender_name=self.sender_name,
+            sender_phone=self.sender_phone,
+            item_tracking_number=self.item_id,
+            item_description_lines=self.item_lines,
+            insurance_check=None,
+            insurance_amount=None,
+            quantity=None,
+        )
 
 
 def _phone_slots(offsets: dict[str, Any], group: str) -> int:
@@ -130,8 +148,6 @@ def resolve_print_boxes(
         offsets,
         "sender",
     )
-    sender_phone_cells = phone_cells_from_box(sender_phone, _phone_slots(offsets, "sender"))
-
     item_id_raw = shifted_box(cfg, cfg_box(cfg, "ITEM_ID", f.item_auction), "ITEM")
     item_lines_raw = shifted_boxes(
         cfg, cfg_line_boxes(cfg, "ITEM_NAME_LINES", f.item_lines[:2]), "ITEM"
@@ -144,7 +160,6 @@ def resolve_print_boxes(
         sender_addr=sender_addr,
         sender_name=sender_name,
         sender_phone=sender_phone,
-        sender_phone_cells=sender_phone_cells,
         item_id=item_id,
         item_lines=item_lines,
     )
@@ -159,8 +174,6 @@ def iter_input_guide_rects(boxes: SagawaPrintBoxes) -> list[tuple[str, AbsBox]]:
         out.append((f"依頼主住所{i + 1}", b))
     out.append(("依頼主名", boxes.sender_name))
     out.append(("依頼主電話番号", boxes.sender_phone))
-    for i, b in enumerate(boxes.sender_phone_cells):
-        out.append((f"依頼主TELマス{i + 1}", b))
     out.append(("オークションID", boxes.item_id))
     for i, b in enumerate(boxes.item_lines):
         out.append((f"商品名{i + 1}", b))

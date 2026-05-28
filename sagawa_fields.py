@@ -43,6 +43,23 @@ class SagawaFields:
     item_auction: AbsBox
     item_lines: tuple[AbsBox, ...]
 
+    # 意味ベース名（sender / recipient）で参照するための互換プロパティ
+    @property
+    def recipient_name(self) -> AbsBox:
+        return self.to_name
+
+    @property
+    def recipient_phone(self) -> AbsBox:
+        return self.to_phone
+
+    @property
+    def sender_name(self) -> AbsBox:
+        return self.from_name
+
+    @property
+    def sender_phone(self) -> AbsBox:
+        return self.from_phone
+
     def all_preview_rects(self) -> list[tuple[str, float, float, float, float]]:
         out: list[tuple[str, float, float, float, float]] = []
         for i, b in enumerate(self.to_zip_cells):
@@ -65,6 +82,72 @@ class SagawaFields:
         for i, b in enumerate(self.item_lines):
             out.append((f"品名・本文{i + 1}行", *b.as_tuple()))
         return out
+
+
+@dataclass(frozen=True)
+class SagawaSemanticFieldMap:
+    """意味ベースの欄名 -> 描画矩形。"""
+
+    recipient_zip_cells: tuple[AbsBox, ...]
+    recipient_address_lines: tuple[AbsBox, ...]
+    recipient_company: AbsBox
+    recipient_name: AbsBox
+    recipient_phone: AbsBox
+    sender_zip_cells: tuple[AbsBox, ...]
+    sender_address_lines: tuple[AbsBox, ...]
+    sender_name: AbsBox
+    sender_phone: AbsBox
+    item_tracking_number: AbsBox
+    item_description_lines: tuple[AbsBox, ...]
+    insurance_check: AbsBox | None
+    insurance_amount: AbsBox | None
+    quantity: AbsBox | None
+
+    def as_dict(self) -> dict[str, AbsBox]:
+        out: dict[str, AbsBox] = {
+            "recipient_company": self.recipient_company,
+            "recipient_name": self.recipient_name,
+            "recipient_phone": self.recipient_phone,
+            "sender_name": self.sender_name,
+            "sender_phone": self.sender_phone,
+            "item_tracking_number": self.item_tracking_number,
+        }
+        if self.insurance_check is not None:
+            out["insurance_check"] = self.insurance_check
+        if self.insurance_amount is not None:
+            out["insurance_amount"] = self.insurance_amount
+        if self.quantity is not None:
+            out["quantity"] = self.quantity
+        for i, b in enumerate(self.recipient_zip_cells, start=1):
+            out[f"recipient_zip_{i}"] = b
+        for i, b in enumerate(self.recipient_address_lines, start=1):
+            out[f"recipient_address_{i}"] = b
+        for i, b in enumerate(self.sender_zip_cells, start=1):
+            out[f"sender_zip_{i}"] = b
+        for i, b in enumerate(self.sender_address_lines, start=1):
+            out[f"sender_address_{i}"] = b
+        for i, b in enumerate(self.item_description_lines, start=1):
+            out[f"item_description_{i}"] = b
+        return out
+
+
+def semantic_fields_from_layout(fields: SagawaFields) -> SagawaSemanticFieldMap:
+    return SagawaSemanticFieldMap(
+        recipient_zip_cells=fields.to_zip_cells,
+        recipient_address_lines=fields.to_addr_lines,
+        recipient_company=fields.to_company,
+        recipient_name=fields.to_name,
+        recipient_phone=fields.to_phone,
+        sender_zip_cells=fields.from_zip_cells,
+        sender_address_lines=fields.from_addr_lines,
+        sender_name=fields.from_name,
+        sender_phone=fields.from_phone,
+        item_tracking_number=fields.item_auction,
+        item_description_lines=fields.item_lines,
+        insurance_check=fields.insurance_check,
+        insurance_amount=fields.insurance_amount,
+        quantity=fields.quantity,
+    )
 
 
 def _union_boxes(boxes: list[AbsBox], *, pad: float = 1.0) -> AbsBox:

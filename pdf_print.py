@@ -30,6 +30,7 @@ from sagawa_field_draw import (
     PhoneFieldStyle,
     ZipFieldStyle,
     draw_dest_input_fields,
+    normalize_sender_fields,
     normalize_recipient_fields,
 )
 from item_parser import parse_auction_product
@@ -56,6 +57,7 @@ from sagawa_print_config import (
     shifted_box,
     shifted_boxes,
 )
+from sender_profile import load_sender_profile
 
 CARRIER_TITLES = {
     "sagawa": "佐川",
@@ -292,6 +294,22 @@ def _draw_text_in_box(
         _label_draw_string(c, font, draw_size, x, y, line)
 
 
+def _draw_single_line_by_field_name(
+    c,
+    font: str,
+    text: str,
+    fields: dict[str, AbsBox],
+    field_name: str,
+    size: int,
+    *,
+    align: str = "left",
+) -> None:
+    box = fields.get(field_name)
+    if box is None:
+        return
+    _draw_single_line_in_box(c, font, text, box, size, align=align)
+
+
 def _format_phone(phone: str) -> str:
     p = (phone or "").strip()
     if not p:
@@ -499,51 +517,57 @@ def _draw_sender_absolute(
 ) -> None:
     if not data.print_sender:
         return
-    s = data.sender
+    # sender は固定プロフィール優先。recipient(OCR)と完全分離する。
+    s = load_sender_profile() or data.sender
+    sender_data = normalize_sender_fields(
+        name=s.name,
+        zip_code=s.zip_code,
+        address=s.address,
+        phone=s.phone,
+    )
     size = int(cfg.get("FONT_SIZE_SENDER", layout.sender_line_size))
     from sagawa_recipient_layout import normalize_zip_row_cells
 
     sender_zip = normalize_zip_row_cells(boxes.sender_zip)
+    semantic = boxes.semantic_fields().as_dict()
     _draw_zip_in_cells(
         c,
         font,
-        s.zip_code,
-        sender_zip,
+        sender_data.zip_code,
+        tuple(
+            semantic.get(f"sender_zip_{i + 1}", b) for i, b in enumerate(sender_zip)
+        ),
         int(cfg.get("FONT_SIZE_ZIP", layout.sender_zip_digit_size)),
         cfg_number(cfg, "ZIP_SPACING"),
     )
-    if s.address:
+    if sender_data.address:
         for box, line in zip(
-            boxes.sender_addr,
-            wrap_for_print(s.address.strip(), width=layout.sender_wrap)[: len(boxes.sender_addr)],
+            tuple(
+                semantic.get(f"sender_address_{i + 1}", b)
+                for i, b in enumerate(boxes.sender_addr)
+            ),
+            wrap_for_print(sender_data.address.strip(), width=layout.sender_wrap)[: len(boxes.sender_addr)],
         ):
             _draw_single_line_in_box(c, font, line, box, size)
-    if s.name:
-        _draw_single_line_in_box(c, font, s.name.strip(), boxes.sender_name, size)
-    phone = _format_phone(s.phone)
-    if phone and boxes.sender_phone_cells:
-        from sagawa_field_draw import PhoneFieldStyle, draw_phone_field
-        from sagawa_recipient_layout import DestInputFields
-
-        draw_phone_field(
+    if sender_data.name:
+        _draw_single_line_by_field_name(
+            c,
+            font,
+            sender_data.name.strip(),
+            semantic,
+            "sender_name",
+            size,
+        )
+    phone = _format_phone(sender_data.phone)
+    if phone:
+        _draw_single_line_by_field_name(
             c,
             font,
             phone,
-            DestInputFields(
-                zip_cells=(),
-                address_lines=(),
-                company=boxes.sender_phone,
-                name=boxes.sender_phone,
-                phone=boxes.sender_phone,
-                phone_cells=boxes.sender_phone_cells,
-            ),
-            PhoneFieldStyle(
-                font_size=int(cfg.get("FONT_SIZE_PHONE", layout.recipient_phone_size)),
-                baseline_ratio=float(cfg.get("BASELINE_RATIO_PHONE", 0.4)),
-            ),
+            semantic,
+            "sender_phone",
+            size,
         )
-    elif phone:
-        _draw_single_line_in_box(c, font, phone, boxes.sender_phone, size)
 
 
 def _draw_sagawa_absolute(
@@ -554,6 +578,7 @@ def _draw_sagawa_absolute(
     cfg: dict,
     boxes: SagawaPrintBoxes,
 ) -> None:
+    # recipient/sender と、保険・時間指定・個数は独立描画（相互に上書きしない）。
     _draw_recipient_absolute(c, font, data, layout, cfg, boxes)
     _draw_sender_absolute(c, font, data, layout, cfg, boxes)
     _draw_quantity(c, font, data.quantity, layout, cfg)

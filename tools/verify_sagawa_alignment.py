@@ -141,6 +141,22 @@ def _actual_from_layout() -> dict[str, tuple[float, float, float, float]]:
     return {name: (x, y, w, h) for name, x, y, w, h in lay.fields.all_preview_rects()}
 
 
+def _field_position_logs() -> dict[str, tuple[float, float, float, float]]:
+    """意味ベース欄名の現在座標（印刷実座標）を収集。"""
+    from label_layout import get_sagawa_layout
+    from sagawa_box_resolver import resolve_print_boxes
+
+    lay = get_sagawa_layout()
+    cfg, boxes = resolve_print_boxes(lay)
+    semantic = boxes.semantic_fields().as_dict()
+    logs: dict[str, tuple[float, float, float, float]] = {}
+    for key in ("recipient_name", "recipient_phone", "sender_name", "sender_phone"):
+        b = semantic.get(key)
+        if b is not None:
+            logs[key] = (round(b.x, 2), round(b.y, 2), round(b.w, 2), round(b.h, 2))
+    return logs
+
+
 def run_checks() -> tuple[list[FieldCheck], dict]:
     img, iw, ih = load_scan()
     scan_lay = _analyze_scan_layout(img, iw, ih)
@@ -426,6 +442,9 @@ def main(argv: list[str] | None = None) -> int:
             for c in checks
         ],
         "debug_png": str(args.png.resolve()),
+        "field_positions": {
+            k: list(v) for k, v in _field_position_logs().items()
+        },
     }
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -439,6 +458,9 @@ def main(argv: list[str] | None = None) -> int:
     )
     print(f"debug: {args.png}")
     print(f"report: {args.report}")
+    for fname, rect in _field_position_logs().items():
+        x, y, w, h = rect
+        print(f"field {fname} -> x={x} y={y} w={w} h={h}")
 
     if s["ng"] > 0 or s.get("missing"):
         if args.fix:
